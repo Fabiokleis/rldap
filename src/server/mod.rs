@@ -13,8 +13,8 @@ pub struct Server {
     attributes: Vec<&'static str>,
 }
 
-pub fn configure_env(server: &mut Server) {
-    let config = Config::from_path(env::var("CARGO_MANIFEST_DIR").unwrap());
+pub fn configure_env(server: &mut Server, from_path: bool) {
+    let config = Config::from_path(env::var("CARGO_MANIFEST_DIR").ok(), from_path);
     server.set_config(config);
     server.load_env_variables();
 }

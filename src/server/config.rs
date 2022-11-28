@@ -4,18 +4,24 @@ use std::collections::hash_map;
 
 #[derive(Default, Clone)]
 pub struct Config {
-    file_path: String,
+    file_path: Option<String>,
     vars: hash_map::HashMap<String, String>,
+    from_path: bool,
 }
 
 impl Config {
-    pub fn from_path(file_path: String) -> Self {
-        Config { file_path, vars: hash_map::HashMap::new() }
+    pub fn from_path(file_path: Option<String>, from_path: bool) -> Self {
+        Config { file_path, vars: hash_map::HashMap::new(), from_path}
     }
 
     pub fn init(&mut self) {
-        let path = Path::new(&self.file_path).join("./.env");
-        dotenv::from_path(Path::new(&path)).ok();
+        if self.from_path {
+            let path: String = self.file_path.clone().unwrap();
+            let path = Path::new(&path).join("./.env");
+            dotenv::from_path(Path::new(&path)).ok();
+        } else {
+            dotenv::dotenv().ok();
+        }
         for (key, value) in env::vars() {
             self.vars.insert(key, value);
         }

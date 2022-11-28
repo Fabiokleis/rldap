@@ -7,7 +7,7 @@ use server::Server;
 
 fn main() -> Result<(), ldap3::LdapError> {
     let mut server = Server::default();
-    server::configure_env(&mut server);
+    server::configure_env(&mut server, false);
     println!("{}", server);
 
     let mut ldap = LdapConn::new(server.ldap_server().as_str())?;
@@ -27,5 +27,5 @@ fn main() -> Result<(), ldap3::LdapError> {
   
     println!("Hello, Ldap!");
 
-    Ok(ldap.unbind().unwrap())
+    Ok(ldap.unbind()?)
 }
