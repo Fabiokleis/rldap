@@ -51,6 +51,8 @@ function call_rldap_bin() {
 function clean_containers() {
     docker container stop "$1" "$2"
     docker container rm "$1" "$2"
+    # remove dangling images
+    docker image rm "$(docker images --filter "dangling=true" -q --no-trunc)"
 }
 
 function show_help() {
@@ -126,3 +128,4 @@ if [ "$#" -eq 0 ]; then
 else
     run_opts "$@"
 fi
+

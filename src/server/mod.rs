@@ -35,6 +35,14 @@ impl Server {
         self.base_dn.clone()
     }
 
+    pub fn bind_dn(&self) -> String {
+        self.bind_dn.clone()
+    }
+
+    pub fn auth_pass(&self) -> String {
+        self.auth_pass.clone()
+    }
+
     pub fn filter(&self) -> String {
         self.filter.clone()
     }
