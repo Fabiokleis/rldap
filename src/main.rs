@@ -10,7 +10,7 @@ fn main() -> Result<(), ldap3::LdapError> {
     server::configure_env(&mut server, false);
     println!("{}", server);
 
-    let mut ldap = LdapConn::new(server.ldap_server().as_str())?;
+    let mut ldap = LdapConn::new(format!("ldap://{}", server.ldap_server().as_str()).as_str())?;
 
     server.set_filter("(&(objectClass=posixAccount)(uid=pinguim))");
     server.set_attribs(vec!["uid", "givenName", "sn", "mail", "userPassword", "*"]);

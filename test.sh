@@ -28,14 +28,24 @@ function load_from_dotenv() {
 function do_test() {
     SERVER="${LOCAL_ENVS["LDAP_SERVER"]}"
 
-    #Create the first ldap server, save the container id in LDAP_CID and get its IP:
-    LDAP_CID1=$(docker run --name "rldap-ldap" --hostname "$SERVER" --detach fishingboo/rldap-osixia-openldap:latest)
+    # Create the first ldap server, save the container id in LDAP_CID and get its IP:
+    LDAP_CID1=$(docker container run --name "rldap-ldap" --hostname "$SERVER" --detach fishingboo/rldap-osixia-openldap:latest)
     LDAP_IP=$(docker inspect -f "{{ .NetworkSettings.IPAddress }}" "$LDAP_CID1")
 
-    #Add the pair "ip hostname" to /etc/hosts
+    # Add the pair "ip hostname" to /etc/hosts
     docker container exec "$LDAP_CID1" bash -c "echo $LDAP_IP $SERVER >> /etc/hosts"
     LDAP_CID2=$(docker container run --detach --name "rldap-test" fishingboo/rldap:latest)
+    docker container exec "$LDAP_CID2" sh -c "echo $LDAP_IP $SERVER >> /etc/hosts"
+
+    # Call rldap file to run the test
+    call_rldap_bin
+
+    # Remove containers aftert the test
     clean_containers "$LDAP_CID1" "$LDAP_CID2"
+}
+
+function call_rldap_bin() {
+    docker container exec "rldap-test" sh -c "./rldap"
 }
 
 function clean_containers() {
@@ -54,5 +64,6 @@ case $1 in
         ;;
     "*") load_default ;;
 esac
+
 
 
