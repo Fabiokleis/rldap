@@ -19,8 +19,11 @@ docker container rm rldap-test
 ```
 
 ### test
-Use the script test.sh to test rldap by creating two containers
-one the openldap server and other the rldap container that makes the ldap request.
+Use the shell script test.sh to test rldap by creating two containers.
+one openldap server and other the rldap container that makes the ldap request.
+
+the openldap container that I used its [docker-openldap](https://github.com/osixia/docker-openldap)
+I extend for my case following the [advanced-user-guide](https://github.com/osixia/docker-openldap#advanced-user-guide)
 
 you need the shell scripts to test, ensure that they have permission
 ```bash

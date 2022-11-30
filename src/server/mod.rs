@@ -15,10 +15,7 @@ pub struct Server {
 }
 
 pub fn configure_env(server: &mut Server, from_path: bool) {
-    let path = match env::var("CARGO_MANIFEST_DIR").ok() {
-        Some(v) => Some(v),
-        None => None,
-    };
+    let path = env::var("CARGO_MANIFEST_DIR").ok();
 
     let config = Config::from_path(path, from_path);
     server.set_config(config);
@@ -64,22 +61,24 @@ impl Server {
         self.auth_pass = self.config.get_var("LDAP_ADMIN_PASSWORD").unwrap();
     }
 
-    pub fn set_filter(&mut self, filter: &str) {
+    pub fn set_filter(&mut self, filter: &str) -> &mut Self {
         self.filter = String::from(filter);
+        self
     }
 
-    pub fn set_attribs(&mut self, attribs: Vec<&'static str>) {
+    pub fn set_attribs(&mut self, attribs: Vec<&'static str>) -> &mut Self {
         self.attributes = attribs;
+        self
     }
 
 }
 
 impl Display for Server {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "server: {}\n", self.ldap_server)?;
-        write!(f, "domain: {}\n", self.ldap_domain)?;
-        write!(f, "base dn: {}\n", self.base_dn)?;
-        write!(f, "bind_dn: {}\n", self.bind_dn)?;
-        write!(f, "auth_pass: {}", self.auth_pass)
+        writeln!(f, "server: {}", self.ldap_server)?;
+        writeln!(f, "domain: {}", self.ldap_domain)?;
+        writeln!(f, "base dn: {}", self.base_dn)?;
+        writeln!(f, "bind_dn: {}", self.bind_dn)?;
+        writeln!(f, "auth_pass: {}", self.auth_pass)
     }
 }

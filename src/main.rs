@@ -12,10 +12,11 @@ fn main() -> Result<(), ldap3::LdapError> {
 
     let mut ldap = LdapConn::new(format!("ldap://{}", server.ldap_server().as_str()).as_str())?;
 
-    server.set_filter("(&(objectClass=posixAccount)(uid=pinguim))");
-    server.set_attribs(vec!["uid","sn", "mail", "userPassword"]);
+    server.set_filter("(&(objectClass=posixAccount)(uid=pinguim))")
+        .set_attribs(vec!["uid","sn", "mail", "userPassword"]);
 
-    let _bind = LdapConn::simple_bind(&mut ldap, server.bind_dn().as_str(), server.auth_pass().as_str())?.success()?; 
+    let _bind = LdapConn::simple_bind(
+        &mut ldap, server.bind_dn().as_str(), server.auth_pass().as_str())?.success()?; 
 
     let (rs, _res) = ldap.search(
         server.base_dn().as_str(),
@@ -30,5 +31,5 @@ fn main() -> Result<(), ldap3::LdapError> {
   
     println!("Hello, Ldap!");
 
-    Ok(ldap.unbind()?)
+    ldap.unbind()
 }

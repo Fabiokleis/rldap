@@ -31,6 +31,6 @@ impl Config {
     }
 
     pub fn get_var(&self, key: &str) -> Option<String> {
-        self.vars.get(key).map(|value| value.clone())
+        self.vars.get(key).cloned()
     }
 }
