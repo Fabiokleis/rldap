@@ -17,3 +17,4 @@ docker build . -t fishingboo/rldap:latest
 docker container run -it --name rldap-test fishingboo/rldap:latest
 docker container rm rldap-test
 ```
+
