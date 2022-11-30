@@ -21,29 +21,28 @@ docker container rm rldap-test
 ### test
 Use the script test.sh to test rldap by creating two containers
 one the openldap server and other the rldap container that makes the ldap request.
-First build docker images with docker build, the rldap Dockerfile its in 
-the root of the project, the openldap Dockerfile its in ldap_test directory.
-if you will use the shell scripts, ensure that they have permission
+
+you need the shell scripts to test, ensure that they have permission
 ```bash
-chmod +x test.sh; chmod +x ldap_test/build.sh
-```
-```bash
-docker build . -t fishingboo/rldap:latest
-cd ldap_test && ./build.sh
-```
-```bash
-./test.sh -h # to view how to use options
-```
-```bash
-./test.sh --build --env=.env --up-container=rldap-ldap --up-container=rldap-test --test --clean
-```
-```bash
-./test.sh -b -e=.env -u=rldap-ldap -u=rldap-test -t -c
+chmod +x test.sh; chmod +x ldap_build/build.sh
 ```
 
-### devel approach
+use the Makefile to build, up, and test containers
 ```bash
-./test.sh -e=.env -u=rldap-ldap -u=rldap-test
-./test.sh -t # do -t to test the ldap request
-./test.sh -c # cleanup the environment
+make # run build_ldap, build, up and test
+```
+```bash
+make build # cleanups dangling images and build rldap image
+```
+```bash
+make build_ldap # cleanups dangling images and build rldap-ldap image
+```
+```bash
+make up # after builds steps, up containers rldap-ldap rldap-test
+```
+```bash
+make test # after container start, make rldap-test request to rldap-ldap container
+```
+```bash
+make clean # cleanups dangling images, stop containers and remove
 ```
