@@ -34,5 +34,5 @@ cd ldap_test && ./build.sh
 ```
 
 ```bash
-./test.sh 
+./test.sh .env
 ```
