@@ -13,3 +13,6 @@ up:
 
 test:
 	./test.sh -t
+
+build_ldap:
+	cd ldap_build && ./build.sh
