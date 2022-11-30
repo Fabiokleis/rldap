@@ -40,7 +40,7 @@ function up_rldap_container() {
 
 function build_rldap() {
     cargo build --target x86_64-unknown-linux-musl --release
-    docker build . -t fishingboo/rldap:latest
+    docker build . -t fishingboo/rldap:latest --no-cache
     docker push fishingboo/rldap:latest
 }
 

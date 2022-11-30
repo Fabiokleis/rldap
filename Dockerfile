@@ -1,4 +1,4 @@
-FROM rust:alpine3.16
+FROM alpine:latest
 MAINTAINER Fabio Kleis <fabiohkrc@gmail.com>
 
 RUN apk update
