@@ -1,24 +1,28 @@
-# rldap
-using ldap bindings for rust
+# Rldap
+using ldap bindings for rust, connecting on ldap server with docker containers envinronment
 
-### build statically with musl
+### Build statically with musl
 ```bash
 cargo build --target x86_64-unknown-linux-musl --release
 ```
 
-### run release
+### Run release
 ```bash
 cargo run --target x86_64-unknown-linux-musl --release
 ```
 
-### build run and remove container
+### Pull docker images
+[rldap](https://hub.docker.com/repository/docker/fishingboo/rldap) are the application image
+
+[rldap-osixia-ldap](https://hub.docker.com/repository/docker/fishingboo/rldap-osixia-openldap) are the ldap image
 ```bash
-docker build . -t fishingboo/rldap:latest
-docker container run --detach --name rldap-test fishingboo/rldap:latest
-docker container rm rldap-test
+docker image pull fishingboo/rldap:latest
+```
+```bash
+docker image pull fishingboo/rldap-osixia-openldap:latest
 ```
 
-### test
+### Test
 Use the shell script test.sh to test rldap by creating two containers.
 one openldap server and other the rldap container that makes the ldap request.
 
@@ -30,6 +34,7 @@ you need the shell scripts to test, ensure that they have permission
 chmod +x test.sh; chmod +x ldap_build/build.sh
 ```
 
+#### Make
 use the Makefile to build, up, and test containers
 ```bash
 make # run build_ldap, build, up and test
