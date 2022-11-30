@@ -14,7 +14,7 @@ cargo run --target x86_64-unknown-linux-musl --release
 ### build run and remove container
 ```bash
 docker build . -t fishingboo/rldap:latest
-docker container run -it --name rldap-test fishingboo/rldap:latest
+docker container run --detach --name rldap-test fishingboo/rldap:latest
 docker container rm rldap-test
 ```
 
@@ -27,12 +27,23 @@ if you will use the shell scripts, ensure that they have permission
 ```bash
 chmod +x test.sh; chmod +x ldap_test/build.sh
 ```
-
 ```bash
 docker build . -t fishingboo/rldap:latest
 cd ldap_test && ./build.sh
 ```
-
 ```bash
-./test.sh .env
+./test.sh -h # to view how to use options
+```
+```bash
+./test.sh --build --env=.env --up-container=rldap-ldap --up-container=rldap-test --test --clean
+```
+```bash
+./test.sh -b -e=.env -u=rldap-ldap -u=rldap-test -t -c
+```
+
+### devel approach
+```bash
+./test.sh -e=.env -u=rldap-ldap -u=rldap-test
+./test.sh -t # do -t to test the ldap request
+./test.sh -c # cleanup the environment
 ```

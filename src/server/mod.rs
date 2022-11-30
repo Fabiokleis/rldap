@@ -15,7 +15,12 @@ pub struct Server {
 }
 
 pub fn configure_env(server: &mut Server, from_path: bool) {
-    let config = Config::from_path(env::var("CARGO_MANIFEST_DIR").ok(), from_path);
+    let path = match env::var("CARGO_MANIFEST_DIR").ok() {
+        Some(v) => Some(v),
+        None => None,
+    };
+
+    let config = Config::from_path(path, from_path);
     server.set_config(config);
     server.load_env_variables();
 }

@@ -23,6 +23,7 @@ impl Config {
             dotenv::dotenv().ok();
         }
         for (key, value) in env::vars() {
+            println!("{}: {}", key, value);
             self.vars.insert(key, value);
         }
     }
