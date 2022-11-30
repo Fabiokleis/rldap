@@ -16,14 +16,16 @@ impl Config {
 
     pub fn init(&mut self) {
         if self.from_path {
-            let path: String = self.file_path.clone().unwrap();
+            let path: String = match self.file_path.clone() {
+                Some(v) => v,
+                None => String::from(""),
+            };
             let path = Path::new(&path).join("./.env");
             dotenv::from_path(Path::new(&path)).ok();
         } else {
             dotenv::dotenv().ok();
         }
         for (key, value) in env::vars() {
-            println!("{}: {}", key, value);
             self.vars.insert(key, value);
         }
     }

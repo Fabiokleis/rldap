@@ -1,15 +1,15 @@
-dn: uid=tester,dc=jacaranda,dc=local
+dn: uid=pinguim,dc=jacaranda,dc=local
 changetype: add
-uid: tester
-cn: tester
-sn: rldap tester
+uid: pinguim
+cn: pinguim
+sn: rldap pinguim
 objectClass: top
 objectClass: posixAccount
 objectClass: inetOrgPerson
 loginShell: /bin/bash
-homeDirectory: /home/tester
+homeDirectory: /home/pinguim
 uidNumber: 14583102
 gidNumber: 14564100
 userPassword: {SSHA}j3lBh1Seqe4rqF1+NuWmjhvtAni1JC5A
-mail: tester@jacaranda.local
-gecos: Tester User
+mail: pinguim@jacaranda.local
+gecos: pinguim User

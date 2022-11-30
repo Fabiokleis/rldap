@@ -7,7 +7,7 @@ use server::Server;
 
 fn main() -> Result<(), ldap3::LdapError> {
     let mut server = Server::default();
-    server::configure_env(&mut server, false);
+    server::configure_env(&mut server, true);
     println!("{}", server);
 
     let mut ldap = LdapConn::new(format!("ldap://{}", server.ldap_server().as_str()).as_str())?;
