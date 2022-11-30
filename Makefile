@@ -2,7 +2,7 @@ NAME = rldap
 VERSION = 0.1.0
 
 
-all: build up test
+all: build_ldap build up test
 PHONY: all
 
 build:
@@ -16,3 +16,6 @@ test:
 
 build_ldap:
 	cd ldap_build && ./build.sh
+
+clean:
+	./test.sh -c 
