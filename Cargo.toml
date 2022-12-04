@@ -8,5 +8,4 @@ edition = "2021"
 
 [dependencies]
 ldap3 = { version = "0.10.5" }
-dotenv = { version = "0.15.0" }
 openssl = { version = "0.10.34", features = [ "vendored" ] }

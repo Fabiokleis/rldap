@@ -1,13 +1,14 @@
 use ldap3::{LdapConn, ResultEntry, Scope, LdapError};
 
-trait State {
-   fn req_connection(self: Box<Self>) -> Box<dyn State>;
-   fn req_bind(self: Box<Self>) -> Box<dyn State>;
-   fn req_search(self: Box<Self>) -> Box<dyn State>;
-   fn get_entries(self: Box<Self>, _request: &Request) -> Option<Vec<ResultEntry>> {
+/// State design pattern to Request
+pub trait State {
+    fn req_connection(self: Box<Self>) -> Box<dyn State>;
+    fn req_bind(self: Box<Self>) -> Box<dyn State>;
+    fn req_search(self: Box<Self>) -> Box<dyn State>;
+    fn get_entries(self: Box<Self>, _request: &Request) -> Option<Vec<ResultEntry>> {
        Some(vec![])
-   }
-   fn clone_dyn(&self) -> Box<dyn State>;
+    }
+    fn clone_dyn(&self) -> Box<dyn State>;
 }
 
 impl Clone for Box<dyn State> {
@@ -16,8 +17,9 @@ impl Clone for Box<dyn State> {
     }
 }
 
+/// Connection State to LdapConn
 #[derive(Clone)]
-struct Connect;
+pub struct Connect;
 impl State for Connect {
     fn req_connection(self: Box<Self>) -> Box<dyn State> {
         self
@@ -36,8 +38,9 @@ impl State for Connect {
     }
 }
 
+/// Bind State to LdapConn
 #[derive(Clone)]
-struct Bind;
+pub struct Bind;
 impl State for Bind {
     fn req_connection(self: Box<Self>) -> Box<dyn State> {
         self
@@ -56,8 +59,9 @@ impl State for Bind {
     }
 }
 
+/// Search State to LdapConn
 #[derive(Clone)]
-struct Search;
+pub struct Search;
 impl State for Search {
     fn req_connection(self: Box<Self>) -> Box<dyn State> {
         Box::new(Connect {})
@@ -85,13 +89,14 @@ impl State for Search {
 
 }
 
+
+/// Request constructor
 #[derive(Default)]
 pub struct Request {
     state: Option<Box<dyn State>>,
     connection: Option<Box::<LdapConn>>,
     entries: Vec<ResultEntry>,
 }
-
 
 impl Request {
     pub fn new() -> Self {
@@ -102,6 +107,11 @@ impl Request {
         }
     }
 
+    /// Create a connection with LdapConn by calling LdapConn constructor
+    ///
+    /// Stores him on heap inside a Box smart pointer
+    ///
+    /// Update state to Connect
     pub fn connect(&mut self, ldap_server: String) -> Result<&mut Self, LdapError> {
         if let Some(s) = self.state.take() {
             self.state = Some(s.req_connection())
@@ -110,10 +120,14 @@ impl Request {
         Ok(self)
     }
 
+    /// Close the connection with LdapConn 
     pub fn unbind(&mut self) -> Result<(), LdapError> {
         self.connection.as_mut().unwrap().unbind()
     }
 
+    /// Do bind on LdapConn by calling simple_bind
+    ///
+    /// Update state to Bind
     pub fn bind(&mut self, bind_dn: &str, bind_pw: &str) -> Result<&mut Self, LdapError> {
         if let Some(s) = self.state.take() {
             self.state = Some(s.req_bind())
@@ -122,6 +136,11 @@ impl Request {
         Ok(self)
     }
 
+    /// Do search by calling search method of LdapConn
+    ///
+    /// Expects multiple arguments to perform filtered searchs
+    ///
+    /// Update state to Search
     pub fn search(&mut self,
         base_dn: &str,
         scope: Scope,

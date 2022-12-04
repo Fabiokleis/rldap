@@ -9,7 +9,7 @@ use client::Request;
 
 fn main() -> Result<(), ldap3::LdapError> {
     let mut server = Server::default();
-    server::configure_env(&mut server, false);
+    server::configure_env(&mut server).expect("could not load environment variables!!!");
     server.set_filter("(&(objectClass=posixAccount)(uid=pinguim))")
         .set_attribs(vec!["uid","sn", "mail", "userPassword"]);
 
