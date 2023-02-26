@@ -22,9 +22,19 @@ docker image pull fishingboo/rldap:latest
 docker image pull fishingboo/rldap-osixia-openldap:latest
 ```
 
+### Container .env configurations setup
+```.env
+LDAP_DOMAIN=jacaranda.local
+LDAP_SERVER=rldap.jacaranda.local
+LDAP_BASE_DN=dc=jacaranda,dc=local
+LDAP_BIND_DN=cn=admin,dc=jacaranda,dc=local
+LDAP_ADMIN_PASSWORD=Mypasswd@123
+```
+
 ### Test
 Use the shell script test.sh to test rldap by creating two containers.
-one openldap server and other the rldap container that makes the ldap request.
+One openldap server and other the rldap container that makes the ldap request.
+All connections by default are using ldaps in 636 port.
 
 the openldap container that I used its [docker-openldap](https://github.com/osixia/docker-openldap)
 I extend for my case following the [advanced-user-guide](https://github.com/osixia/docker-openldap#advanced-user-guide)
