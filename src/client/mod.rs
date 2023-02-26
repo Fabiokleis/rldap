@@ -1,4 +1,5 @@
 use ldap3::{LdapConn, ResultEntry, Scope, LdapError};
+use crate::server::{self, Server};
 
 /// State design pattern to Request
 pub trait State {
@@ -95,6 +96,7 @@ impl State for Search {
 pub struct Request {
     state: Option<Box<dyn State>>,
     connection: Option<Box::<LdapConn>>,
+    server: Server,
     entries: Vec<ResultEntry>,
 }
 
@@ -103,6 +105,7 @@ impl Request {
         Request { 
             state: Some(Box::new(Connect)), 
             connection: None,
+            server: Server::default(),
             entries: vec![],
         }
     }
@@ -112,11 +115,16 @@ impl Request {
     /// Stores him on heap inside a Box smart pointer
     ///
     /// Update state to Connect
-    pub fn connect(&mut self, ldap_server: String) -> Result<&mut Self, LdapError> {
+    pub fn connect(&mut self) -> Result<&mut Self, LdapError> {
+        server::configure_env(&mut self.server)
+            .expect("ERROR: Could not load environment variables from .env!!!");
         if let Some(s) = self.state.take() {
             self.state = Some(s.req_connection())
         }
-        self.connection = Some(Box::new(LdapConn::new(ldap_server.as_str())?));
+        let server_uri = &self.server.ldap_server().as_str();
+        self.connection = Some(
+            Box::new(LdapConn::new(server_uri)?)
+        );
         Ok(self)
     }
 
@@ -128,11 +136,15 @@ impl Request {
     /// Do bind on LdapConn by calling simple_bind
     ///
     /// Update state to Bind
-    pub fn bind(&mut self, bind_dn: &str, bind_pw: &str) -> Result<&mut Self, LdapError> {
+    pub fn bind(&mut self) -> Result<&mut Self, LdapError> {
         if let Some(s) = self.state.take() {
             self.state = Some(s.req_bind())
         }
-        LdapConn::simple_bind(self.connection.as_mut().unwrap(), bind_dn, bind_pw)?;
+        LdapConn::simple_bind(
+            self.connection.as_mut().unwrap(),
+            self.server.bind_dn().as_str(), 
+            self.server.auth_pass().as_str()
+        )?;
         Ok(self)
     }
 
@@ -142,10 +154,9 @@ impl Request {
     ///
     /// Update state to Search
     pub fn search(&mut self,
-        base_dn: &str,
-        scope: Scope,
         filter: &str,
-        attribs: Vec<&str>
+        attribs: Vec<&str>,
+        scope: Scope
         ) -> Result<&mut Self, LdapError> {
 
         if let Some(s) = self.state.take() {
@@ -153,7 +164,7 @@ impl Request {
         }
         self.entries = self.connection.as_mut().map(|conn| 
             conn.search(
-                base_dn,
+                self.server.base_dn().as_str(),
                 scope,
                 filter,
                 attribs))

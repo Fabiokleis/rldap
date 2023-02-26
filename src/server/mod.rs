@@ -2,7 +2,7 @@ use std::{env, fmt::Display};
 mod config;
 use config::Config;
 
-/// Server constructor
+/// Server base struct
 #[derive(Default, Clone)]
 pub struct Server {
     config: Config,
@@ -11,13 +11,9 @@ pub struct Server {
     base_dn: String,
     bind_dn: String,
     auth_pass: String,
-    filter: String,
-    attributes: Vec<&'static str>,
 }
 
 /// Load environment variables by CARGO_MANIFEST_DIR
-///
-/// in production the CARGO_MANIFEST_DIR are empty
 pub fn configure_env(server: &mut Server) -> Result<(), std::io::Error> {
     let path = env::var("CARGO_MANIFEST_DIR").ok();
 
@@ -49,16 +45,6 @@ impl Server {
         self.auth_pass.clone()
     }
 
-    /// Returns ldap server filter that will be used to make searchs (uid=user)
-    pub fn filter(&self) -> String {
-        self.filter.clone()
-    }
-
-    /// Returns ldap server attributes that will be used to make searchs (vec!["uid", ...])
-    pub fn attribs(&self) -> Vec<&'static str> {
-        self.attributes.clone()
-    }
-
     /// Set a new value to Config struct 
     pub fn set_config(&mut self, config: Config) {
         self.config = config;
@@ -75,17 +61,6 @@ impl Server {
         Ok(())
     }
 
-    /// Set a new value to filter, returns self to chain functions
-    pub fn set_filter(&mut self, filter: &str) -> &mut Self {
-        self.filter = String::from(filter);
-        self
-    }
-
-    /// Set a new value to attributes, reteurns self to chain functions
-    pub fn set_attribs(&mut self, attribs: Vec<&'static str>) -> &mut Self {
-        self.attributes = attribs;
-        self
-    }
 }
 
 impl Display for Server {
