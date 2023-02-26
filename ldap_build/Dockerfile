@@ -1,7 +1,8 @@
-FROM osixia/openldap:1.5.0
+FROM osixia/openldap:latest
 MAINTAINER Fabio Kleis <fabiohkrc@gmail.com>
 
 ADD bootstrap /container/service/slapd/assets/config/bootstrap
 ADD certs /container/service/slapd/assets/certs
 ADD environment /container/environment/01-custom
-EXPOSE 389 636
+# 389 636
+EXPOSE 636

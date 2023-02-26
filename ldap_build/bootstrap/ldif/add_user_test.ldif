@@ -2,7 +2,7 @@ dn: uid=pinguim,dc=jacaranda,dc=local
 changetype: add
 uid: pinguim
 cn: pinguim
-sn: rldap pinguim
+sn: pinguim rldap
 objectClass: top
 objectClass: posixAccount
 objectClass: inetOrgPerson
