@@ -52,5 +52,8 @@ make up # after builds steps, up containers rldap-ldap rldap-test
 make test # after container start, make rldap-test request to rldap-ldap container
 ```
 ```bash
+make update # builds rldap to linux-musl in --release target, copy rldap bin and .env to running rldap-test container 
+```
+```bash
 make clean # cleanups dangling images, stop containers and remove
 ```
