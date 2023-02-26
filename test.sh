@@ -35,13 +35,18 @@ function up_rldap_container() {
     LDAP_IP=$(docker inspect -f "{{ .NetworkSettings.IPAddress }}" "rldap-ldap")
 
     LDAP_CID2=$(docker container run --detach --name "rldap-test" fishingboo/rldap:latest)
+    sleep 1
+    docker cp -L "rldap-ldap:/container/service/slapd/assets/certs/the-ca.crt" ./the-ca.crt 
+    docker cp -L ./the-ca.crt "rldap-test:/the-ca.crt"
+    docker container exec "$LDAP_CID2" sh -c "cat the-ca.crt >> /etc/ssl/cert.pem"
     docker container exec "$LDAP_CID2" sh -c "echo $LDAP_IP $SERVER >> /etc/hosts"
+    rm the-ca.crt
 }
 
 function build_rldap() {
     cargo build --target x86_64-unknown-linux-musl --release
     docker build . -t fishingboo/rldap:latest --no-cache
-    #docker push fishingboo/rldap:latest
+    docker push fishingboo/rldap:latest
 }
 
 function call_rldap_bin() {
