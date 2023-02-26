@@ -41,7 +41,7 @@ function up_rldap_container() {
 function build_rldap() {
     cargo build --target x86_64-unknown-linux-musl --release
     docker build . -t fishingboo/rldap:latest --no-cache
-    docker push fishingboo/rldap:latest
+    #docker push fishingboo/rldap:latest
 }
 
 function call_rldap_bin() {
@@ -53,6 +53,12 @@ function clean_containers() {
     docker container rm "$1" "$2"
     # remove dangling images
     docker image rm "$(docker images --filter "dangling=true" -q --no-trunc)"
+}
+
+function update_code() {
+    cargo build --target x86_64-unknown-linux-musl --release
+    docker cp ./target/x86_64-unknown-linux-musl/release/rldap "rldap-test:/"
+    docker cp .env "rldap-test:/"
 }
 
 function show_help() {
@@ -101,6 +107,9 @@ function run_opts() {
                 up_rldap_container
                 shift
             ;;
+            -update|--update)
+                update_code
+            ;;
            -t|--test)
                 call_rldap_bin
                 shift
@@ -128,4 +137,3 @@ if [ "$#" -eq 0 ]; then
 else
     run_opts "$@"
 fi
-
