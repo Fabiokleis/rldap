@@ -115,20 +115,22 @@ impl Request {
     /// Stores him on heap inside a Box smart pointer
     ///
     /// Update state to Connect
-    pub fn connect(&mut self, port: u32) -> Result<&mut Self, LdapError> {
+    pub fn connect(&mut self, port: u32, start_tls: bool) -> Result<&mut Self, LdapError> {
         server::configure_env(&mut self.server)
             .expect("ERROR: Could not load environment variables from .env!!!");
-        if let Some(s) = self.state.take() {
-            self.state = Some(s.req_connection())
-        }
+        
+        let prot = if start_tls { String::from("ldaps") } else { String::from("ldap") };
         self.connection = Some(
             Box::new(
-                LdapConn::new(
-                    format!("ldaps://{}:{port}", self.server.ldap_server()).as_str()
+                LdapConn::with_settings(
+                    LdapConnSettings::new().set_starttls(start_tls),
+                    format!("{}://{}:{port}", prot, self.server.ldap_server()).as_str()
                 )?
             )
         );
-
+        if let Some(s) = self.state.take() {
+            self.state = Some(s.req_connection())
+        }
         Ok(self)
     }
 
@@ -141,14 +143,14 @@ impl Request {
     ///
     /// Update state to Bind
     pub fn bind(&mut self) -> Result<&mut Self, LdapError> {
-        if let Some(s) = self.state.take() {
-            self.state = Some(s.req_bind())
-        }
         LdapConn::simple_bind(
             self.connection.as_mut().unwrap(),
             self.server.bind_dn().as_str(), 
             self.server.auth_pass().as_str()
         )?;
+        if let Some(s) = self.state.take() {
+            self.state = Some(s.req_bind())
+        }
         Ok(self)
     }
 
@@ -163,9 +165,6 @@ impl Request {
         scope: Scope
         ) -> Result<&mut Self, LdapError> {
 
-        if let Some(s) = self.state.take() {
-            self.state = Some(s.req_search())
-        }
         self.entries = self.connection.as_mut().map(|conn| 
             conn.search(
                 self.server.base_dn().as_str(),
@@ -173,6 +172,9 @@ impl Request {
                 filter,
                 attribs))
             .unwrap()?.success()?.0;
+        if let Some(s) = self.state.take() {
+            self.state = Some(s.req_search())
+        }
         Ok(self)
     }
 
