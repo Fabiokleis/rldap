@@ -1,4 +1,4 @@
-use ldap3::{LdapConn, ResultEntry, Scope, LdapError};
+use ldap3::{LdapConn, ResultEntry, Scope, LdapError, LdapConnSettings};
 use crate::server::{self, Server};
 
 /// State design pattern to Request
@@ -115,16 +115,20 @@ impl Request {
     /// Stores him on heap inside a Box smart pointer
     ///
     /// Update state to Connect
-    pub fn connect(&mut self) -> Result<&mut Self, LdapError> {
+    pub fn connect(&mut self, port: u32) -> Result<&mut Self, LdapError> {
         server::configure_env(&mut self.server)
             .expect("ERROR: Could not load environment variables from .env!!!");
         if let Some(s) = self.state.take() {
             self.state = Some(s.req_connection())
         }
-        let server_uri = &self.server.ldap_server().as_str();
         self.connection = Some(
-            Box::new(LdapConn::new(server_uri)?)
+            Box::new(
+                LdapConn::new(
+                    format!("ldaps://{}:{port}", self.server.ldap_server()).as_str()
+                )?
+            )
         );
+
         Ok(self)
     }
 

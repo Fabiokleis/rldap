@@ -5,10 +5,11 @@ pub mod server;
 pub mod client;
 use client::Request;
 
+const PORT: u32 = 636;
 
 fn main() -> Result<(), ldap3::LdapError> {
     let entries = Request::new()
-        .connect()?
+        .connect(PORT)?
         .bind()?
         .search(
             "(&(objectClass=posixAccount)(uid=pinguim))",
