@@ -12,10 +12,14 @@ up:
 	./test.sh -e=.env -u=rldap-ldap -u=rldap-test
 
 test:
+	@sleep 1
 	./test.sh -t
 
 build_ldap:
 	cd ldap_build && ./build.sh
+
+update:
+	./test.sh --update
 
 clean:
 	./test.sh -c 
