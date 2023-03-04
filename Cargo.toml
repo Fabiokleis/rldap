@@ -1,10 +1,17 @@
 [package]
-author = ["Fabio Kleis <fabiohkrc@gmail.com>"]
 name = "rldap"
 version = "0.1.0"
+authors = ["Fabio Kleis <fabiohkrc@gmail.com>"]
 edition = "2021"
+description = "A wrapper over ldap3 crate to easy create connection and send requests to openldap server."
+homepage = "https://github.com/fabiokleis/rldap"
+repository = "https://github.com/fabiokleis/rldap"
+readme = "README.md"
+keywords = ["ldap", "client"]
+license = "MIT"
+categories = ["network-programming"]
+exclude = ["test.sh", "ldap_build/", "Dockerfile"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 ldap3 = { version = "0.11.1" }
